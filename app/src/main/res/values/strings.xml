@@ -1,3 +1,13 @@
 <resources>
   <string name="app_name">Tip Calculator</string>
+  <string name="default_tip_percentage">15</string>
+  <string name="default_amount">0.00</string>
+  <string name="total_bill_amount">Total Bill Amount</string>
+  <string name="bill_amount">Bill Amount</string>
+  <string name="tip_amount">Tip Amount</string>
+  <string name="enter_bill_amount">Enter Bill Amount :</string>
+  <string name="currency_dollar_symbol">$</string>
+  <string name="choose_your_tip_percentage">Choose your tip % :</string>
+  <string name="button_minus">-</string>
+  <string name="button_plus">+</string>
 </resources>
