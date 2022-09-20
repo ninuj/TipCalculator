@@ -3,6 +3,7 @@
   <string name="enter_bill_amount">Enter Bill Amount:</string>
   <string name="choose_your_tip_percentage">Choose your tip% :</string>
   <string name="button_minus">-</string>
+  <string name="default_bill_amount">0</string>
   <string name="default_tip_percentage">15</string>
   <string name="button_plus">+</string>
   <string name="tip_amount">Tip Amount: %s</string>
