@@ -35,15 +35,80 @@
 package com.androidchef.android.tipcalculator
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import androidx.appcompat.app.AppCompatActivity
+import com.androidchef.android.tipcalculator.databinding.ActivityMainBinding
+import java.text.NumberFormat
+import kotlin.math.roundToInt
 
 /**
  * Main Screen
  */
 class MainActivity : AppCompatActivity() {
 
+  private lateinit var binding: ActivityMainBinding
+  var currentBillAmount = DEFAULT_MIN_AMOUNT
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_main)
+    binding = ActivityMainBinding.inflate(layoutInflater)
+    setContentView(binding.root)
+
+    // initialize the listeners
+    with(binding) {
+      minusButton.setOnClickListener { decrementTipPercentage() }
+      plusButton.setOnClickListener { incrementTipPercentage() }
+      billAmountInputEditTextView.addTextChangedListener(object : TextWatcher {
+        override fun afterTextChanged(s: Editable?) {
+          currentBillAmount = if (!s.isNullOrEmpty() && s.toString() != ".") s.toString().toDouble() else DEFAULT_MIN_AMOUNT
+          calculateTipAmount(billAmount = currentBillAmount)
+        }
+
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
+      })
+    }
+    updateTotalBillAmount()
+  }
+
+  private fun incrementTipPercentage() {
+    val tipPercentage = binding.tipPercentageValueTextView.text.toString().toInt() + 1
+    updateTipPercentage(tipPercentage)
+  }
+
+  private fun decrementTipPercentage() {
+    val tipPercentage = binding.tipPercentageValueTextView.text.toString().toInt() - 1
+    updateTipPercentage(tipPercentage)
+  }
+
+  private fun updateTipPercentage(tipPercentage: Int) {
+    if (tipPercentage in 0..100) {
+      binding.tipPercentageValueTextView.text = tipPercentage.toString()
+      calculateTipAmount(tipPercentage.toDouble())
+    }
+  }
+
+  private fun calculateTipAmount(tipPercentage: Double = binding.tipPercentageValueTextView.text.toString().toDouble(),
+                                 billAmount: Double = currentBillAmount) {
+    val tipAmountRounded = ((tipPercentage / 100) * billAmount).also {
+      roundToTwoDecimalPlaces(it)
+    }
+    val billAmountRounded = roundToTwoDecimalPlaces(billAmount)
+    updateTotalBillAmount(tipAmountRounded, billAmountRounded)
+  }
+
+  private fun updateTotalBillAmount(tipAmount: Double = DEFAULT_MIN_AMOUNT, billAmount: Double = DEFAULT_MIN_AMOUNT) {
+    val totalBillAmount = tipAmount + billAmount
+    with(binding) {
+      tipAmountTextView.text = getString(R.string.tip_amount, NumberFormat.getCurrencyInstance().format(tipAmount))
+      totalBillTextView.text = getString(R.string.total_bill, NumberFormat.getCurrencyInstance().format(totalBillAmount))
+    }
+  }
+
+  private fun roundToTwoDecimalPlaces(number: Double): Double = ((number * 100.0).roundToInt()) / 100.0
+
+  companion object {
+    const val DEFAULT_MIN_AMOUNT = 0.00
   }
 }
